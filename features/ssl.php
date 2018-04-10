@@ -8,6 +8,7 @@ add_action( 'jurassic_ninja_init', function() {
 		'ssl' => false,
 	];
 
+	// Hook the feature before adding autologin to the site.
 	add_action( 'jurassic_ninja_add_features_before_auto_login', function( &$app, $features, $domain ) use ( $defaults ) {
 		$features = array_merge( $defaults, $features );
 		// Currently not used but the code works.
@@ -32,12 +33,13 @@ add_action( 'jurassic_ninja_init', function() {
 			}
 		}
 	}, 10, 3 );
+	// Declare that this feature will be off by default when launching a site with the /create endpoint.
 	add_filter( 'jurassic_ninja_rest_feature_defaults', function( $defaults ) {
 		return array_merge( $defaults, [
 			'ssl' => (bool) settings( 'ssl_use_custom_certificate', false ),
 		] );
 	} );
-
+	// Add https or http to the URL
 	add_filter( 'jurassic_ninja_created_site_url', function( $domain, $features ) {
 		// See note in launch_wordpress() about why we can't launch subdomain_multisite with ssl.
 		$schema = $features['ssl'] && ! $features['subdomain_multisite'] ? 'https' : 'http';
@@ -47,6 +49,7 @@ add_action( 'jurassic_ninja_init', function() {
 } );
 
 add_action( 'jurassic_ninja_admin_init', function() {
+	// Add settings for this feature
 	add_filter( 'jurassic_ninja_settings_options_page', function( $options_page ) {
 		$settings = [
 			'title' => __( 'SSL Configuration', 'jurassic-ninja' ),

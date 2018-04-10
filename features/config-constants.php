@@ -7,6 +7,7 @@ add_action( 'jurassic_ninja_init', function() {
 		'config-constants' => false,
 	];
 
+	//Hook the feature before adding autologin to the site.
 	add_action( 'jurassic_ninja_add_features_before_auto_login', function( &$app, $features, $domain ) use ( $defaults ) {
 		$features = array_merge( $defaults, $features );
 		if ( $features['config-constants'] ) {

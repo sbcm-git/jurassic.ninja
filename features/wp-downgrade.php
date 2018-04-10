@@ -7,6 +7,7 @@ add_action( 'jurassic_ninja_init', function() {
 		'wp-downgrade' => false,
 	];
 
+	// Hook the feature before adding autologin to the site.
 	add_action( 'jurassic_ninja_add_features_before_auto_login', function( &$app, $features, $domain ) use ( $defaults ) {
 		$features = array_merge( $defaults, $features );
 		if ( $features['wp-downgrade'] ) {
@@ -15,12 +16,14 @@ add_action( 'jurassic_ninja_init', function() {
 		}
 	}, 10, 3 );
 
+	// Declare that this feature will be off by default when launching a site with the /create endpoint.
 	add_filter( 'jurassic_ninja_rest_feature_defaults', function( $defaults ) {
 		return array_merge( $defaults, [
 			'wp-downgrade' => false,
 		] );
 	} );
 
+	// Declare that this feature can be requested or disabled from the /create endpoint.
 	add_filter( 'jurassic_ninja_rest_create_request_features', function( $features, $json_params ) {
 		if ( isset( $json_params['wp-downgrade'] ) ) {
 			$features['wp-downgrade'] = $json_params['wp-downgrade'];

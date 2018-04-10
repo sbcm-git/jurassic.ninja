@@ -8,6 +8,7 @@ add_action( 'jurassic_ninja_init', function() {
 		'subdomain_multisite' => false,
 	];
 
+	// Abort if the user requests both types of multisite
 	add_action( 'jurassic_ninja_do_feature_conditions', function( $features ) use ( $defaults ) {
 		$features = array_merge( $defaults, $features );
 		if ( $features['subdir_multisite'] && $features['subdomain_multisite'] ) {
@@ -15,6 +16,9 @@ add_action( 'jurassic_ninja_init', function() {
 		}
 	} );
 
+	// Hook the feature after adding autologin to the site.
+	// In this case, adding the feature after the auto_login
+	// allows to not have to enable plugins (like the companion plugin) for subsites created afterwards
 	add_action( 'jurassic_ninja_add_features_after_auto_login', function( &$app, $features, $domain ) use ( $defaults ) {
 		$features = array_merge( $defaults, $features );
 		// Enabling multisite is done very late so we can install plugins first without
@@ -29,7 +33,7 @@ add_action( 'jurassic_ninja_init', function() {
 			enable_subdomain_multisite( $domain );
 		}
 	}, 10, 3 );
-
+	// Declare that this feature will be off by default when launching a site with the /create endpoint.
 	add_filter( 'jurassic_ninja_rest_feature_defaults', function( $defaults ) {
 		return array_merge( $defaults, [
 			'subdomain_multisite' => false,

@@ -8,6 +8,7 @@ add_action( 'jurassic_ninja_init', function() {
 		'branch' => false,
 	];
 
+	//Hook the feature before adding autologin to the site.
 	add_action( 'jurassic_ninja_add_features_before_auto_login', function( &$app, $features, $domain ) use ( $defaults ) {
 		$features = array_merge( $defaults, $features );
 		if ( $features['jetpack-beta'] ) {
@@ -20,13 +21,14 @@ add_action( 'jurassic_ninja_init', function() {
 			activate_jetpack_branch( $features['branch'] );
 		}
 	}, 10, 3 );
-
+	// Declare that this feature will be off by default when launching a site with the /create endpoint.
 	add_filter( 'jurassic_ninja_rest_feature_defaults', function( $defaults ) {
 		return array_merge( $defaults, [
 			'jetpack-beta' => (bool) settings( 'add_jetpack_beta_by_default', false ),
 		] );
 	} );
 
+	// Declare that this feature can be requested or disabled from the /create endpoint.
 	add_filter( 'jurassic_ninja_rest_create_request_features', function( $features, $json_params ) {
 		$branch = isset( $json_params['branch'] ) ? $json_params['branch'] : 'master';
 		if ( isset( $json_params['jetpack-beta'] ) && $json_params['jetpack-beta'] ) {
@@ -50,6 +52,7 @@ add_action( 'jurassic_ninja_init', function() {
 } );
 
 add_action( 'jurassic_ninja_admin_init', function() {
+	// Add settings for this feature.
 	add_filter( 'jurassic_ninja_settings_options_page_default_plugins', function( $fields ) {
 		$field = [
 			'add_jetpack_beta_by_default' => [
@@ -85,6 +88,11 @@ function activate_jetpack_branch( $branch_name ) {
 	} );
 }
 
+/**
+ * Gets the download URL for a built version of Jetpack's code on a GitHub branch
+ * @param  string $branch_name The branch name we want to get
+ * @return string              The URL providing the zip file for the built Jetpack version.
+ */
 function get_jetpack_beta_url( $branch_name ) {
 	$branch_name = str_replace( '/', '_', $branch_name );
 	$manifest_url = 'https://betadownload.jetpack.me/jetpack-branches.json';
